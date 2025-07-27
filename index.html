@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Productivity Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            dark: '#0a0a0a',
+                            light: '#1a1a1a',
+                        },
+                        accent: {
+                            DEFAULT: '#10b981',
+                            dark: '#059669',
+                            light: '#34d399',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-primary-dark text-gray-200 min-h-screen font-sans">
+    <!-- Password Lock Screen -->
+    <div id="lock-screen" class="fixed inset-0 bg-primary-dark z-50 flex flex-col items-center justify-center p-4">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-lock text-3xl text-primary-dark"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-accent mb-2">Nexus</h1>
+            <p class="text-gray-400">Your secure productivity hub</p>
+        </div>
+        
+        <div class="w-full max-w-xs">
+            <div class="flex justify-center mb-6" id="password-dots">
+                <!-- Password dots will be added here by JS -->
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3">
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="1">1</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="2">2</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="3">3</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="4">4</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="5">5</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="6">6</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="7">7</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="8">8</button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="9">9</button>
+                <button class="bg-transparent"></button>
+                <button class="number-btn bg-primary-light hover:bg-gray-700 rounded-lg py-4 text-xl font-medium transition" data-number="0">0</button>
+                <button id="backspace-btn" class="bg-transparent text-gray-400 hover:text-accent transition">
+                    <i class="fas fa-backspace text-2xl"></i>
+                </button>
+            </div>
+            
+            <button id="unlock-btn" class="w-full mt-6 bg-accent hover:bg-accent-dark text-primary-dark py-3 rounded-lg font-semibold transition">
+                Unlock
+            </button>
+            
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-500">Temp Password: <span class="text-accent font-mono">1234</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main App Container -->
+    <div id="app-container" class="hidden">
+        <!-- Sidebar Navigation -->
+        <div class="fixed left-0 top-0 bottom-0 w-16 md:w-64 bg-primary-light border-r border-gray-800 z-40 transition-all duration-300">
+            <div class="flex flex-col h-full">
+                <div class="p-4 border-b border-gray-800 flex items-center justify-center md:justify-start">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                        <i class="fas fa-leaf text-primary-dark text-sm"></i>
+                    </div>
+                    <span class="hidden md:block ml-3 font-bold text-accent text-xl">Nexus</span>
+                </div>
+                
+                <nav class="flex-1 overflow-y-auto py-4">
+                    <ul>
+                        <li>
+                            <a href="#" class="nav-link active" data-section="dashboard">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span class="hidden md:inline">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-section="notes">
+                                <i class="fas fa-sticky-note"></i>
+                                <span class="hidden md:inline">Notes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-section="tasks">
+                                <i class="fas fa-tasks"></i>
+                                <span class="hidden md:inline">Tasks</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-section="calendar">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span class="hidden md:inline">Calendar</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-section="links">
+                                <i class="fas fa-link"></i>
+                                <span class="hidden md:inline">Links</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-section="ai">
+                                <i class="fas fa-robot"></i>
+                                <span class="hidden md:inline">AI Assistant</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="p-4 border-t border-gray-800">
+                    <button id="lock-btn" class="w-full flex items-center justify-center md:justify-start text-gray-400 hover:text-accent transition">
+                        <i class="fas fa-lock"></i>
+                        <span class="hidden md:inline ml-3">Lock</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden fixed top-4 left-4 z-30 bg-primary-light p-2 rounded-lg">
+            <i class="fas fa-bars text-accent"></i>
+        </button>
+        
+        <!-- Main Content Area -->
+        <div class="ml-0 md:ml-16 lg:ml-64 transition-all duration-300 min-h-screen">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section-content p-6 fade-in">
+                <div class="max-w-6xl mx-auto">
+                    <h1 class="text-3xl font-bold text-accent mb-6">Dashboard</h1>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Stats Cards -->
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-sticky-note text-accent"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Notes</p>
+                                    <h3 class="text-xl font-semibold" id="notes-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-tasks text-accent"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Active Tasks</p>
+                                    <h3 class="text-xl font-semibold" id="tasks-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-calendar-day text-accent"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Today's Events</p>
+                                    <h3 class="text-xl font-semibold" id="events-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-link text-accent"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Saved Links</p>
+                                    <h3 class="text-xl font-semibold" id="links-count">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Quick Notes -->
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800 lg:col-span-2">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold">Quick Notes</h2>
+                                <button id="add-note-btn" class="bg-accent hover:bg-accent-dark text-primary-dark px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    <i class="fas fa-plus mr-1"></i> Add Note
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-4" id="recent-notes">
+                                <!-- Recent notes will be added here by JS -->
+                                <div class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-sticky-note text-4xl mb-2"></i>
+                                    <p>No notes yet. Create your first note!</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Tasks -->
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold">Upcoming Tasks</h2>
+                                <button id="add-task-btn" class="bg-accent hover:bg-accent-dark text-primary-dark px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    <i class="fas fa-plus mr-1"></i> Add Task
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-3" id="upcoming-tasks">
+                                <!-- Upcoming tasks will be added here by JS -->
+                                <div class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-tasks text-4xl mb-2"></i>
+                                    <p>No upcoming tasks. Add your first task!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Notes Section -->
+            <section id="notes" class="section-content p-6 hidden">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-accent">Notes</h1>
+                        <div class="flex space-x-3">
+                            <div class="relative">
+                                <input type="text" id="search-notes" placeholder="Search notes..." class="bg-primary-light border border-gray-700 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent w-64">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                            </div>
+                            <button id="add-new-note-btn" class="bg-accent hover:bg-accent-dark text-primary-dark px-4 py-2 rounded-lg font-medium transition">
+                                <i class="fas fa-plus mr-1"></i> New Note
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="notes-grid">
+                        <!-- Notes will be added here by JS -->
+                        <div class="col-span-3 text-center py-16 text-gray-500">
+                            <i class="fas fa-sticky-note text-5xl mb-4"></i>
+                            <h3 class="text-xl mb-2">No notes yet</h3>
+                            <p class="mb-4">Create your first note to get started</p>
+                            <button id="create-first-note" class="bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                                Create Note
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tasks Section -->
+            <section id="tasks" class="section-content p-6 hidden">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-accent">Tasks</h1>
+                        <button id="add-new-task-btn" class="bg-accent hover:bg-accent-dark text-primary-dark px-4 py-2 rounded-lg font-medium transition">
+                            <i class="fas fa-plus mr-1"></i> New Task
+                        </button>
+                    </div>
+                    
+                    <div class="bg-primary-light rounded-xl p-6 border border-gray-800 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                            <div class="mb-4 md:mb-0">
+                                <h2 class="text-xl font-semibold mb-2">Today's Tasks</h2>
+                                <p class="text-gray-400 text-sm" id="today-date"></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="task-filter-btn active" data-filter="all">All</button>
+                                <button class="task-filter-btn" data-filter="active">Active</button>
+                                <button class="task-filter-btn" data-filter="completed">Completed</button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3" id="tasks-list">
+                            <!-- Tasks will be added here by JS -->
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-tasks text-5xl mb-4"></i>
+                                <h3 class="text-xl mb-2">No tasks yet</h3>
+                                <p class="mb-4">Add your first task to get started</p>
+                                <button id="create-first-task" class="bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                                    Add Task
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Calendar Section -->
+            <section id="calendar" class="section-content p-6 hidden">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-accent">Calendar</h1>
+                        <div class="flex items-center space-x-4">
+                            <button id="prev-month" class="text-gray-400 hover:text-accent transition">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h2 id="current-month" class="text-xl font-semibold">June 2023</h2>
+                            <button id="next-month" class="text-gray-400 hover:text-accent transition">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button id="today-btn" class="bg-accent hover:bg-accent-dark text-primary-dark px-4 py-2 rounded-lg text-sm font-medium transition">
+                                Today
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                        <div class="grid grid-cols-7 gap-1 mb-2">
+                            <div class="text-center font-medium text-gray-400 py-2">Sun</div>
+                            <div class="text-center font-medium text-gray-400 py-2">Mon</div>
+                            <div class="text-center font-medium text-gray-400 py-2">Tue</div>
+                            <div class="text-center font-medium text-gray-400 py-2">Wed</div>
+                            <div class="text-center font-medium text-gray-400 py-2">Thu</div>
+                            <div class="text-center font-medium text-gray-400 py-2">Fri</div>
+                            <div class="text-center font-medium text-gray-400 py-2">Sat</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-1" id="calendar-grid">
+                            <!-- Calendar days will be added here by JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h2 class="text-xl font-semibold mb-4">Upcoming Events</h2>
+                        <div class="space-y-3" id="upcoming-events">
+                            <!-- Upcoming events will be added here by JS -->
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-calendar-alt text-5xl mb-4"></i>
+                                <h3 class="text-xl mb-2">No events scheduled</h3>
+                                <p class="mb-4">Add your first event to get started</p>
+                                <button id="create-first-event" class="bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                                    Add Event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Links Section -->
+            <section id="links" class="section-content p-6 hidden">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-accent">Saved Links</h1>
+                        <button id="add-new-link-btn" class="bg-accent hover:bg-accent-dark text-primary-dark px-4 py-2 rounded-lg font-medium transition">
+                            <i class="fas fa-plus mr-1"></i> New Link
+                        </button>
+                    </div>
+                    
+                    <div class="bg-primary-light rounded-xl p-6 border border-gray-800 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                            <div class="relative mb-4 md:mb-0 md:w-1/2">
+                                <input type="text" id="search-links" placeholder="Search links..." class="bg-primary-dark border border-gray-700 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent w-full">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="link-filter-btn active" data-filter="all">All</button>
+                                <button class="link-filter-btn" data-filter="work">Work</button>
+                                <button class="link-filter-btn" data-filter="personal">Personal</button>
+                                <button class="link-filter-btn" data-filter="learning">Learning</button>
+                                <button class="link-filter-btn" data-filter="other">Other</button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3" id="links-list">
+                            <!-- Links will be added here by JS -->
+                            <div class="text-center py-16 text-gray-500">
+                                <i class="fas fa-link text-5xl mb-4"></i>
+                                <h3 class="text-xl mb-2">No saved links yet</h3>
+                                <p class="mb-4">Save your first link to get started</p>
+                                <button id="create-first-link" class="bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                                    Save Link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- AI Assistant Section -->
+            <section id="ai" class="section-content p-6 hidden">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-accent">AI Assistant</h1>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm flex items-center">
+                                <span class="w-2 h-2 bg-accent rounded-full mr-2 animate-pulse"></span>
+                                Online
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-primary-light rounded-xl p-6 border border-gray-800 mb-6">
+                        <div class="h-96 overflow-y-auto mb-4 space-y-4" id="chat-messages">
+                            <div class="flex">
+                                <div class="bg-accent/20 text-accent p-4 rounded-lg ai-bubble max-w-xs md:max-w-md lg:max-w-lg">
+                                    <p>Hello! I'm your Nexus AI Assistant. How can I help you be more productive today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="text" id="ai-message-input" placeholder="Ask me anything about productivity..." class="flex-1 bg-primary-dark border border-gray-700 rounded-l-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                            <button id="send-ai-message" class="bg-accent hover:bg-accent-dark text-primary-dark px-6 py-3 rounded-r-lg font-medium transition">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <h3 class="text-lg font-semibold mb-3">Quick Suggestions</h3>
+                            <div class="space-y-2">
+                                <button class="ai-quick-question w-full text-left px-4 py-2 bg-primary-dark hover:bg-gray-800 rounded-lg transition">
+                                    How can I prioritize my tasks?
+                                </button>
+                                <button class="ai-quick-question w-full text-left px-4 py-2 bg-primary-dark hover:bg-gray-800 rounded-lg transition">
+                                    Give me a productivity tip
+                                </button>
+                                <button class="ai-quick-question w-full text-left px-4 py-2 bg-primary-dark hover:bg-gray-800 rounded-lg transition">
+                                    Suggest a time management technique
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <h3 class="text-lg font-semibold mb-3">Your Stats</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Tasks Completed</p>
+                                    <div class="w-full bg-primary-dark rounded-full h-2 mt-1">
+                                        <div class="bg-accent h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                    <p class="text-right text-xs mt-1 text-gray-400">5/20 tasks</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Notes Created</p>
+                                    <div class="w-full bg-primary-dark rounded-full h-2 mt-1">
+                                        <div class="bg-accent h-2 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                    <p class="text-right text-xs mt-1 text-gray-400">12/20 notes</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-primary-light rounded-xl p-6 border border-gray-800">
+                            <h3 class="text-lg font-semibold mb-3">AI Tools</h3>
+                            <div class="space-y-2">
+                                <button class="ai-tool-btn w-full text-left px-4 py-2 bg-primary-dark hover:bg-gray-800 rounded-lg transition flex items-center">
+                                    <i class="fas fa-magic text-accent mr-3"></i>
+                                    <span>Summarize my notes</span>
+                                </button>
+                                <button class="ai-tool-btn w-full text-left px-4 py-2 bg-primary-dark hover:bg-gray-800 rounded-lg transition flex items-center">
+                                    <i class="fas fa-calendar-check text-accent mr-3"></i>
+                                    <span>Schedule my tasks</span>
+                                </button>
+                                <button class="ai-tool-btn w-full text-left px-4 py-2 bg-primary-dark hover:bg-gray-800 rounded-lg transition flex items-center">
+                                    <i class="fas fa-lightbulb text-accent mr-3"></i>
+                                    <span>Generate ideas</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Modals -->
+        <!-- Note Modal -->
+        <div id="note-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+            <div class="bg-primary-light rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" id="note-modal-title">New Note</h3>
+                        <button class="close-modal text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <input type="text" id="note-title" placeholder="Note title" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                        <textarea id="note-content" placeholder="Write your note here..." class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 h-40 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"></textarea>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="custom-checkbox mr-2">
+                                <span class="text-sm">Pin to dashboard</span>
+                            </label>
+                        </div>
+                        <div class="space-x-2">
+                            <button class="cancel-note px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-800 transition">
+                                Cancel
+                            </button>
+                            <button class="save-note bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Task Modal -->
+        <div id="task-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+            <div class="bg-primary-light rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" id="task-modal-title">New Task</h3>
+                        <button class="close-modal text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Task Title</label>
+                            <input type="text" id="task-title" placeholder="What needs to be done?" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Due Date</label>
+                                <input type="date" id="task-due-date" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Priority</label>
+                                <select id="task-priority" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Description</label>
+                            <textarea id="task-description" placeholder="Add details about the task..." class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end mt-6 space-x-2">
+                        <button class="cancel-task px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-800 transition">
+                            Cancel
+                        </button>
+                        <button class="save-task bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Event Modal -->
+        <div id="event-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+            <div class="bg-primary-light rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" id="event-modal-title">New Event</h3>
+                        <button class="close-modal text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Event Title</label>
+                            <input type="text" id="event-title" placeholder="What's the event about?" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Start Date & Time</label>
+                                <input type="datetime-local" id="event-start" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">End Date & Time</label>
+                                <input type="datetime-local" id="event-end" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Description</label>
+                            <textarea id="event-description" placeholder="Add details about the event..." class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Color</label>
+                            <div class="flex space-x-2">
+                                <button class="event-color-option w-6 h-6 rounded-full bg-accent border-2 border-accent" data-color="accent"></button>
+                                <button class="event-color-option w-6 h-6 rounded-full bg-blue-500 border-2 border-transparent" data-color="blue"></button>
+                                <button class="event-color-option w-6 h-6 rounded-full bg-purple-500 border-2 border-transparent" data-color="purple"></button>
+                                <button class="event-color-option w-6 h-6 rounded-full bg-red-500 border-2 border-transparent" data-color="red"></button>
+                                <button class="event-color-option w-6 h-6 rounded-full bg-yellow-500 border-2 border-transparent" data-color="yellow"></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end mt-6 space-x-2">
+                        <button class="cancel-event px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-800 transition">
+                            Cancel
+                        </button>
+                        <button class="save-event bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Link Modal -->
+        <div id="link-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+            <div class="bg-primary-light rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold" id="link-modal-title">New Link</h3>
+                        <button class="close-modal text-gray-400 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Title</label>
+                            <input type="text" id="link-title" placeholder="Give this link a name" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">URL</label>
+                            <input type="url" id="link-url" placeholder="https://example.com" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Category</label>
+                            <select id="link-category" class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
+                                <option value="work">Work</option>
+                                <option value="personal">Personal</option>
+                                <option value="learning">Learning</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Notes</label>
+                            <textarea id="link-notes" placeholder="Add any notes about this link..." class="w-full bg-primary-dark border border-gray-700 rounded-lg px-4 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end mt-6 space-x-2">
+                        <button class="cancel-link px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-800 transition">
+                            Cancel
+                        </button>
+                        <button class="save-link bg-accent hover:bg-accent-dark text-primary-dark px-6 py-2 rounded-lg font-medium transition">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
